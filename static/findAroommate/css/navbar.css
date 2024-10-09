@@ -1,0 +1,13 @@
+#saved {
+    color: black;
+    transition: color,background-color 0.3s ease-in-out; /* Smooth transition for color change */
+    cursor:pointer;
+    background-color: lightcoral;
+    padding:0 0.5rem 0 0.5rem;
+    border-radius: 0.5rem;
+
+}
+#saved:hover {
+        color: lightcoral;
+        background-color: black;
+    }

@@ -1,0 +1,16 @@
+#searchbar {
+    border-radius: .5rem;
+    width: 100%;
+    align-content: center;
+    border-width: 0.1rem;
+}
+
+.search-buttons{
+    display:flex;
+    justify-content: space-around;
+}
+
+#searchbar_btn {
+    margin-top: 0.5rem;
+    padding: 0.2rem 0.5rem 0.2rem 0.5rem ;
+}
