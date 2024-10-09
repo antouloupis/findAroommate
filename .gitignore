@@ -9,7 +9,6 @@ __pycache__/
 # Ignore the .env file for environment variables
 .env
 .env.prod
-
 # Ignore any local database files
 *.sqlite3
 *.db
