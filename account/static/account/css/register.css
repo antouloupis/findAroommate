@@ -1,0 +1,12 @@
+.form-bg {
+    background-color: rgb(130, 130, 244);
+}
+
+#form-btn{
+    background-color: coral;
+}
+
+#form-btn:hover{
+    background-color: green;
+}
+

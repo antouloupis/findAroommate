@@ -1,0 +1,16 @@
+
+<form method="GET" action="{% url 'search_listings' %}" id="general-search-form">
+    <input type="hidden" name="form_type" value="general_search">
+    <input id="searchbar" type="text" name="search_query" placeholder="Search...">
+    <div class="d-flex justify-content-center">
+    <button type="submit" class="btn btn-primary">Search</button>
+    {% include 'search/filters.html' %}
+    <button type="button" onclick="handleFilters()"class="btn btn-success">Filters</button>
+    </div>
+    
+</form>
+
+
+
+
+
