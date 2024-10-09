@@ -24,5 +24,4 @@ COPY ./findaroommate/ /app/findaroommate
 
 COPY ./findaroommate/manage.py /app/
 
-# Gunicorn will serve the app
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "findaroommate.wsgi:application"]
+EXPOSE 8000

@@ -1,3 +1,4 @@
+#for dev
 # Ignore Python bytecode
 __pycache__/
 *.pyc
@@ -8,6 +9,7 @@ __pycache__/
 
 # Ignore the .env file for environment variables
 .env.dev
+.env
 
 # Ignore any local database files
 *.sqlite3
