@@ -13,14 +13,12 @@ amogus
 {% endblock %}
 {% block content %}
 
-    <div class="layout d-flex flex-column my-0 mx-auto py-0">
+    <div class="d-flex flex-column text-center">
         <div class="title">
             <h1> List your house for rent, or find a place to stay</h1>
         </div>
         <div class="subtitle"><h2> easy search </h2></div>
-        <div class="searchbar">
-            {% include 'search/searchbar.html' %}
-        </div>
+        {% include 'search/searchbar.html' %}
     </div>
 
 
@@ -29,27 +27,35 @@ amogus
 
 
 {% block body_scripts %}
-
 <script>
-    function closeOverlay() {    
-        document.getElementById("overlay").style.display = "none";
-        document.body.style.overflow = "auto"; // Enable scrolling
-    }
-    
-    function closeFromDiv() {
-        if (!document.getElementById('filter-list').contains(event.target)){
-            closeOverlay();
+    function filterMunicipalities() {
+        const searchInput = document.getElementById('mn-search');
+        const filter = searchInput.value.toLowerCase();
+        const dropdown = document.getElementById('mn-select');
+        const items = dropdown.getElementsByClassName('dropdown-item');
+
+        for (let i = 0; i < items.length; i++) {
+            const itemText = items[i].textContent.toLowerCase();
+            items[i].style.display = itemText.includes(filter) ? 'block' : 'none';
         }
     }
-    
+
+    function selectMunicipality(element) {
+        const selectedValue = element.getAttribute('data-value');
+        const selectedText = element.textContent;
+
+        document.getElementById('mn-button').textContent = selectedText; // Update button text
+        document.getElementById('selectedMunicipality').value = selectedValue; // Store selected value
+    }
+</script>
+<script>
     function validateNumbers() {
         let min,max,errorMsg;
         const errorField = document.getElementById("form-error");
-        min = parseInt(document.querySelector("[name='price-min']").value) ?? 0;
-        max = parseInt(document.querySelector("[name='price-max']").value);
+        min = parseInt(document.querySelector("[name='price_min']").value) ?? 0;
+        max = parseInt(document.querySelector("[name='price_max']").value);
         if (!isNaN(max)) {
             if (min > max) {
-                console.log(max);
                 errorMsg = "Minimum cannot be greater than maximum!";
             }
         }
@@ -62,9 +68,6 @@ amogus
             errorField.style.display="none";
         }
     }
-    function handleFilters() {
-            document.getElementById("overlay").style.display = "flex";
-            document.body.style.overflow = "hidden"; // Disable scrolling
-        }
+
     </script>
 {% endblock %}

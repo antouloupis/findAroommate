@@ -4,6 +4,6 @@ from .models import Listing
 
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ('title','id', 'location', 'price', 'date_listed', 'hidden')
+    list_display = ('title','id', 'municipality', 'price', 'date_listed', 'hidden')
     list_filter = ('hidden',)
-    search_fields = ('title', 'location')
+    search_fields = ('title', 'municipality')

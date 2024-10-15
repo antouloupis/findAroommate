@@ -1,19 +1,108 @@
-<div id="overlay" onclick="closeFromDiv()">
-    <div id="filter-list" class="d-flex flex-column">
-        <div class="d-flex flex-column">
-            <div class="justify-content-end d-flex">
-            <i class="bi bi-x-circle fs-4" id="close_filters" onclick="closeOverlay()"></i>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h5 class="modal-title" id="exampleModalLabel">Filters</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+        <form>
+        </form>
+        <div class="row d-flex mb-4">
+            <div class="col mx-auto">
+                <div class="dropdown mb-3">
+                    <label class="form-label">Select municipality</label>
+                    <button class="btn btn-secondary form-control dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="mn-button">
+                        Select...
+                    </button>
+                    <ul class="dropdown-menu" id="mn-select">
+                        <li>
+                            <input type="text" class="form-control bg-transparent" id="mn-search" placeholder="ex. Athens" onkeyup="filterMunicipalities()">
+                        </li>
+                        <li><hr class="dropdown-divider"></li> <!-- Divider for aesthetics -->
+                        {% for value, label in filter_form.municipality.field.choices %}
+                            <li class="dropdown-item" data-value="{{ value }}" onclick="selectMunicipality(this)">{{ label }}</li>
+                        {% endfor %}
+                    </ul>
+                    <input type="hidden" id="selectedMunicipality" name="municipality">
+              </div>
             </div>
-            <div class="form-container mt-3">
-            <form method="GET" action="{% url 'search_listings' %}">
-            <input type="hidden" name="form_type" value="filter">
-            <input type="text" class="form-control mb-3" name="location" placeholder="Location">
-            <input type="number" class="form-control mb-3" min="1" name="price-min" placeholder="Minimum price" onChange="validateNumbers()">
-            <input type="number" class="form-control mb-3" min="1" name="price-max" placeholder="Maximum price" onChange="validateNumbers()">
-            <span id="form-error" style="display:none"> </span>
-            <button type="submit" class="btn btn-primary">Search</button>
-            </form>
+        </div>
+        <div class="row d-flex my-4">
+            <div class="col mx-auto d-flex flex-column">
+                <label class="form-label">Price:</label> 
+                <div class="d-flex">
+                <input type="number" class="form-control" name="price_min" placeholder="From" min="0" onChange="validateNumbers()">
+                <input type="number" class="form-control" name="price_max" placeholder="Max" min="0" onChange="validateNumbers()">
+                </div>
+            </div>
+
+            <div class="col mx-auto d-flex flex-column">
+                <label class="form-label">House size(m2):</label> 
+                <div class="d-flex">
+                    <input type="number" class="form-control" placeholder="From" name="min_size"  min="0">
+                    <input type="number" class="form-control" placeholder="Max" name="max_size" min="0">
+                </div>
+            </div>
+        </div>
+
+        <div class="row d-flex my-4">
+            <div class="col d-flex">
+                <div class="mx-auto d-flex flex-column mx-auto">
+                    <label for="elevator" class="form-label">Elevator:</label>
+                    <input type="checkbox" class="form-check-input mx-auto p-2" name="elevator">
+                </div>
+                <div class="mx-auto d-flex flex-column mx-auto">
+                    <label for="smoking" class="form-label">Smoking:</label>
+                    <input type="checkbox" class="form-check-input mx-auto p-2" name="smoking">
+                </div>
+                <div class="mx-auto d-flex flex-column mx-auto">
+                    <label for="parking" class="form-label">Parking:</label>
+                    <input type="checkbox" class="form-check-input mx-auto p-2" name="parking">
+                </div>
+                <div class="mx-auto d-flex flex-column mx-auto">
+                    <label for="garden" class="form-label">Garden:</label>
+                    <input type="checkbox" class="form-check-input mx-auto p-2" name="garden">
+                </div>
+                <div class="mx-auto d-flex flex-column mx-auto">
+                    <label for="own_room" class="form-label">Own room:</label>
+                    <input type="checkbox" class="form-check-input mx-auto p-2" name="own_room">
+                </div>
+            </div>
+        </div> 
+
+        <div class="row d-flex mt-4">
+            <div class="col mx-auto d-flex flex-column">
+                <label for="bathrooms_min" class="form-label">Bathrooms:</label> 
+                <div class="d-flex">
+                <input type="number" class="form-control" name="bathrooms_min" placeholder="From" min="0" max="10">
+                <input type="number" class="form-control" name="bathrooms_max" placeholder="Max" min="0" max="10">
+                </div>
+            </div>
+
+            <div class="col mx-auto d-flex flex-column">
+                <label for="roommates_min" class="form-label">Roommates:</label> 
+                <div class="d-flex">
+                <input type="number" class="form-control mx-auto" name="roommates_min" placeholder="From" min="0" max="10">
+                <input type="number" class="form-control mx-auto" name="roommates_max" placeholder="Max" min="0" max="10">
+                </div>
+            </div>
+
+            <div class="col mx-auto d-flex flex-column">
+                <label for="floor_min" class="form-label">Floor:</label> 
+                <div class="d-flex">
+                <input type="number" class="form-control mx-auto" placeholder="From" name="floor_min" min="-2" max="15">
+                <input type="number" class="form-control mx-auto" placeholder="Max" name="floor_max" min="-2" max="15">    
+                </div>
+            </div>
+        </div>
+        <span id="form-error" class="text-danger"></span>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+      </div>
     </div>
-</div>
-    </div>
-</div>
+  </div>
+  

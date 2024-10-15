@@ -15,45 +15,189 @@
     {% endif %}
     
     <!-- Display the form -->
-    <form method="POST" class="gap-2">
+    <form method="POST" class=" col-9 mx-auto">
         {% csrf_token %}
-        <div class="row">
+        <div class="row align-content-center">
             <h2>Create a New Listing</h2>
             <div class="col">
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" id="title" class="form-control" name="title" placeholder="ex. Second floor appartment in Gazi">
-                </div>
-            </div>
-            <div class="col">
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" id="price" class="form-control" name="price" placeholder="Price in €">
+                    {{ form.title }}
                 </div>
             </div>
         </div>
+
         <div class="row">
-            <div class="col">
-                <div class="mb-3">
-                    <label for="location" class="form-label">Location</label>
-                    <input type="text" id="location" class="form-control" name="location" placeholder="ex. Athens">
-                </div>
+            <div class="col d-flex">
+                <div class="dropdown mb-3">
+                        <label class="form-label">Select municipality</label>
+                        <button class="btn btn-secondary form-control dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="mn-button">
+                            Select...
+                        </button>
+                        <ul class="dropdown-menu" id="mn-select">
+                            <li>
+                                <input type="text" class="form-control bg-transparent" id="mn-search" placeholder="ex. Athens" onkeyup="filterMunicipalities()">
+                            </li>
+                            <li><hr class="dropdown-divider"></li> <!-- Divider for aesthetics -->
+                            {% for value, label in form.municipality.field.choices %}
+                                <li class="dropdown-item" data-value="{{ value }}" onclick="selectMunicipality(this)">{{ label }}</li>
+                            {% endfor %}
+                        </ul>
+                        <input type="hidden" id="selectedMunicipality" name="municipality">
+                  </div>
             </div>
             <div class="col">
-                <p>Hide listing?</p>
-                <div class="mb-3 form-check">
-                    <input class="form-check-input" type="checkbox" id="hidden" name="hidden">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label">Hidden?</p>
+                    <div class="form-check mt-auto">
                     <label for="hidden" class="form-check-label">Yes</label>
+                    {{ form.hidden }}
+                    </div>
                 </div>
             </div>
         </div>
+        
+        <div class="row mb-3">
+            <div class="col d-flex flex-column">
+                
+                    <label for="price" class="form-label">Price:</label>
+                    {{ form.price }}
+
+            </div>
+            <div class="col d-flex flex-column">
+                
+                    <label for="build_year" class="form-label">Build Year:</label>
+                    {{ form.build_year }}
+                
+            </div>
+            <div class="col d-flex flex-column">
+                
+                <label for="size" class="form-label">House size:</label>
+                {{ form.size }}
+                
+            </div>
+            <div class="col d-flex flex-column">
+                
+                <label for="floor" class="form-label">Floor:</label>
+                {{ form.floor }}
+                
+            </div>
+            <div class="col d-flex flex-column">
+                
+                    <label for="bathrooms" class="form-label">Bathrooms:</label>
+                    {{ form.bathrooms }}
+                
+            </div>
+            <div class="col d-flex flex-column">
+                
+                <label for="roommates" class="form-label">Roommates:</label>
+                {{ form.roommates }}
+                
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Seperate room?
+                        <i class="bi bi-info-circle" title="Will the renter have their own room?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="own_room" class="form-check-label">Yes</label>
+                    {{ form.own_room }}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Smoking?
+                        <i class="bi bi-info-circle" title="Is smoking allowed indoors?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="smoking" class="form-check-label">Yes</label>
+                    {{ form.smoking }}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Parking?
+                        <i class="bi bi-info-circle" title="Is there a parking spot available to the renter?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="parking" class="form-check-label">Yes</label>
+                    {{ form.parking }}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Elevator?
+                        <i class="bi bi-info-circle" title="Is there elevator access?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="elevator" class="form-check-label">Yes</label>
+                    {{ form.elevator }}
+                    </div>
+                </div>
+            </div>
+            <div class="col d-flex">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Garden or yard?
+                        <i class="bi bi-info-circle" title="Is there an accessible garden or yard?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="garden" class="form-check-label">Yes</label>
+                    {{ form.garden }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
         <div class="row">
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <input type="text" id="description" class="form-control" name="description" placeholder="An accurate description of the listing">
+                {{ form.description }}
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Create Listing</button>
     </form>
 </div>
+{% endblock %}
+
+{% block body_scripts %}
+<script>
+    function filterMunicipalities() {
+        const searchInput = document.getElementById('mn-search');
+        const filter = searchInput.value.toLowerCase();
+        const dropdown = document.getElementById('mn-select');
+        const items = dropdown.getElementsByClassName('dropdown-item');
+
+        for (let i = 0; i < items.length; i++) {
+            const itemText = items[i].textContent.toLowerCase();
+            items[i].style.display = itemText.includes(filter) ? 'block' : 'none';
+        }
+    }
+
+    function selectMunicipality(element) {
+        const selectedValue = element.getAttribute('data-value');
+        const selectedText = element.textContent;
+
+        document.getElementById('mn-button').textContent = selectedText; // Update button text
+        document.getElementById('selectedMunicipality').value = selectedValue; // Store selected value
+    }
+</script>
+
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock %}
+{% block extra_head %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 {% endblock %}

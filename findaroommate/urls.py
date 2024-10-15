@@ -20,8 +20,8 @@ from search.views import search_listings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include("core.urls"), name='front_page'),  # Maps root URL to front_page view
-    path('search/', include('search.urls'), name='search_listings'),  # Search app
+    path('', include("core.urls")),  # Maps root URL to front_page view
+    path('search/', include('search.urls')),  # Search app
     path('account/', include('account.urls')),  # Account App
     path('listings/', include('listings.urls')), #listings app
     

@@ -5,12 +5,11 @@
     border-width: 0.1rem;
 }
 
-.search-buttons{
-    display:flex;
-    justify-content: space-around;
+#searchbar:hover + #search-icon {
+    color:#0d6efd;
 }
 
-#searchbar_btn {
-    margin-top: 0.5rem;
-    padding: 0.2rem 0.5rem 0.2rem 0.5rem ;
+#searchbar:hover {
+    border-color:#0d6efd;
+    border-width: 1px;
 }

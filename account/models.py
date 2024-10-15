@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 import re
 
 class CustomUser(AbstractUser):
-    favorite_listings = models.ManyToManyField(Listing, related_name='favorited_by', blank=True)
+    favorite_listings = models.ManyToManyField(Listing, related_name='saved_by', blank=True)
     #for users to have a favorite list
     
     # Set the maximum length for the username

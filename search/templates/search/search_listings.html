@@ -7,16 +7,40 @@
 {% block content %}
 <div class="container-fluid h-100 d-flex flex-column">
     <h2>Search Results</h2>
-    <ul>
+    <ul class="list-group">
         {% for listing in listings %}
-            <li>{{ listing.title }} - {{ listing.location }} - ${{ listing.price }} id {{listing.id}}
-                <button class="add-to-favorites" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
-                hx-post="{% url 'add_favorite' listing.id %}"  hx-swap="outerHTML">
-                    Add to favorites
-                </button>
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="px-5">
+                    </div>
+                <div class="d-flex flex-column">
+                    <h5>{{ listing.title }}</h5>
+                        <div>
+                        <span>{{ listing.municipality }}</span>
+                        <span>{{listing.build_year}}</span>
+                        <span>{{listing.size}}</span>
+                        </div>
+                </div> id {{listing.id}}
+                {% if request.user.is_anonymous %}
+                    <button class="btn btn-outline-danger" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
+                    hx-post="{% url 'add_favorite' listing.id %}"  hx-swap="outerHTML">
+                        Add to favorites
+                    </button>
+                {% else %}
+                    {% if listing in user.favorite_listings.all %}
+                    <button class="btn btn-danger" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-post=".">Saved</button>
+                    {% else %}
+                    <button class="btn btn-outline-danger" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
+                    hx-post="{% url 'add_favorite' listing.id %}" hx-swap="outerHTML">
+                        Add to favorites
+                    </button>
+                    {% endif %}
+                {% endif %}
+                   
+                </div>
             </li>
         {% empty %}
-            <li>No listings found.</li>
+            <li class="list-group-item">No listings found.</li>
         {% endfor %}
     </ul>
 {% endblock %}
