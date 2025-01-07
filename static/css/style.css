@@ -1,0 +1,10 @@
+body {
+    background-color: wheat;
+    min-height: 100vh;
+    font-size:110%
+}
+
+.content {
+    min-height: calc(100vh - 58px - 4rem - 50px);
+    margin-top:4rem;
+}

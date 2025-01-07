@@ -1,0 +1,44 @@
+{% extends "profiles/edit_profile.html" %}
+{% block nav_title %}
+<h1 class="mt-5"> Change username or email</h1>
+{% endblock nav_title %}
+{% block page_nav %}
+    <div>
+        <ul class="nav nav-underline mb-3">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'edit_profile' %}" aria-current="page">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page">Change email</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'change_password' %}">Change password</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url "my_listings" %}">My Listings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'inbox' %}">Messages</a>
+            </li>
+            <li>
+                <a class="btn btn-danger" href="{% url 'logout' %}">Logout<a/>
+            </li>
+        </ul>
+    </div>
+    {% endblock page_nav %}
+
+    {% block active_tab %}
+    
+<form method="POST" class="d-flex flex-column me-auto">
+    {% csrf_token %}
+    <div class="mb-3 me-lg-auto">
+        <label for="email" class="form-label">New email:</label>
+        <input type="email" id="email" class="form-control" name="email" placeholder="{{ user.email }}">
+    </div>
+    <button type="submit" class="btn btn-primary me-lg-auto">Confirm Changes</button>
+</form>
+{% for message in messages %}
+<p class=" d-flex justify-content-around">{{message}}</p>
+{% endfor %}
+</div>
+{% endblock active_tab %}

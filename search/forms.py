@@ -1,93 +1,131 @@
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 from listings.municipalities import MUNICIPALITIES
+from listings.models import Location
 
-class FilterForm(forms.Form):  # Using forms.Form, not ModelForm
-    municipality = forms.ChoiceField(
-        choices=[(option, option) for option in MUNICIPALITIES],
-        required=False
+class FilterForm(forms.Form):
+
+    area = forms.ModelChoiceField(
+        queryset=Location.objects.all(),
+        required=False,
+        empty_label="Select area",
+        widget=forms.Select(attrs={
+            'class': 'form-select',
+        })
     )
 
-    own_room = forms.BooleanField(required=False)
-    garden = forms.BooleanField(required=False)
-    parking = forms.BooleanField(required=False)
-    elevator = forms.BooleanField(required=False)
-    smoking = forms.BooleanField(required=False)
-    pet = forms.BooleanField(required=False)
+    own_room = forms.ChoiceField(
+        choices=[('', 'Any'), ('True', 'Yes'), ('False', 'No')],
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-select'  # This is a Bootstrap class to style the dropdown
+        })
+    )
+
+    garden = forms.TypedChoiceField(
+        choices=[('', 'Any'), ('True', 'Yes'), ('False', 'No')],
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-select'  # This is a Bootstrap class to style the dropdown
+        })
+    )
+
+    parking = forms.TypedChoiceField(
+        choices=[('', 'Any'), ('True', 'Yes'), ('False', 'No')],
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-select'  # This is a Bootstrap class to style the dropdown
+        })
+    )
+
+    elevator = forms.TypedChoiceField(
+        choices=[('', 'Any'), ('True', 'Yes'), ('False', 'No')],
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-select'  # This is a Bootstrap class to style the dropdown
+        })
+    )
+
+    smoking = forms.TypedChoiceField(
+        choices=[('', 'Any'), ('True', 'Yes'), ('False', 'No')],
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-select'  # This is a Bootstrap class to style the dropdown
+        })
+    )
+
+    pet = forms.TypedChoiceField(
+        choices=[('', 'Any'), ('True', 'Yes'), ('False', 'No')],
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-select'  # This is a Bootstrap class to style the dropdown
+        })
+    )
 
     price_min = forms.IntegerField(
-        validators=[
-            MinValueValidator(0),  # Ensure the value is not negative
-            MaxValueValidator(5000)  # Ensure the value does not exceed 5000
-        ],
-        required=False
+        validators=[MinValueValidator(0), MaxValueValidator(5000)],
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',  # Adding Bootstrap class for styling
+            'placeholder': 'Minimum',
+            'onchange':'validatePrice()',
+            'oninput':'restrictToNumbers(this)'
+        })
     )
-    
     price_max = forms.IntegerField(
-        validators=[
-            MinValueValidator(0),  # Ensure the value is not negative
-            MaxValueValidator(5000)  # Ensure the value does not exceed 5000
-        ],
-        required=False
+        validators=[MinValueValidator(0), MaxValueValidator(5000)],
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',  # Adding Bootstrap class for styling
+            'placeholder': 'Maximum',
+            'onchange':'validatePrice()',
+            'oninput':'restrictToNumbers(this)'
+        })
     )
 
-        
     bathrooms_min = forms.IntegerField(
         validators=[MaxValueValidator(20)],
-        required=False
-    )
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',  # Adding Bootstrap class for styling
+            'placeholder': ' Minimum',
+            'oninput':'validateBathrooms(this)',
+        }))
 
-    bathrooms_max = forms.IntegerField(
-        validators=[MaxValueValidator(20)],
-        required=False
-    )   
-    
     size_min = forms.IntegerField(
-        validators=[
-            MinValueValidator(0),  # Ensure the value is not negative
-            MaxValueValidator(5000)
-        ],
-        required=False
-    )
-    
-    size_max = forms.IntegerField(
-        validators=[
-            MinValueValidator(0),  # Ensure the value is not negative
-            MaxValueValidator(5000)
-        ],
-        required=False
-    )
-        
-    roommates_min = forms.IntegerField(
-        validators=[MaxValueValidator(10)],
-        required=False
-    )
+        validators=[MinValueValidator(0),
+        MaxValueValidator(5000)],
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',  # Adding Bootstrap class for styling
+            'placeholder': 'Minimum',
+            'oninput':'validateSize(this)',
+        }))
 
     roommates_max = forms.IntegerField(
         validators=[MaxValueValidator(10)],
-        required=False
-    )
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',  # Adding Bootstrap class for styling
+            'placeholder': 'Maximum',
+            'oninput':'validateRoommates(this)'
+        }))
 
     floor_min = forms.IntegerField(
         validators=[MaxValueValidator(15)],
-        required=False
-    )
-    
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',  # Adding Bootstrap class for styling
+            'placeholder': 'Minimum',
+            'onchange':'validateFloor()',
+            'oninput':'restrictToNumbers(this)'
+        }))
     floor_max = forms.IntegerField(
         validators=[MaxValueValidator(15)],
-        required=False
-    )
-    
-            
-    def clean(self):
-        cleaned_data = super().clean()  # Call the parent clean method
-        
-        price_min = cleaned_data.get('price_min')
-        price_max = cleaned_data.get('price_max')
-        
-        # Check if both price_min and price_max are provided
-        if price_min is not None and price_max is not None:
-            if price_min > price_max:
-                raise forms.ValidationError("Minimum price cannot be greater than maximum price.")
-        
-        return cleaned_data  # Return the cleaned data   
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',  # Adding Bootstrap class for styling
+            'placeholder': 'Maximum',
+            'onchange':'validateFloor()',
+            'oninput':'restrictToNumbers(this)'
+        }))

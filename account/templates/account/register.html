@@ -8,11 +8,8 @@
 {% endblock %}
 {% block content %}
 
-<div class="container">
-
-
-<div class="input-group d-flex justify-content-around">
-<form class="d-flex flex-column" method="POST">
+<div class="container d-flex flex-column justify-content-center content">
+<form class="d-flex flex-column mx-auto" method="POST">
     <h2 class="mb-3">Register</h2>
     {% csrf_token %}
     <div class="mb-2">
@@ -32,7 +29,7 @@
         <input type="password" name="password2" class="form-control" id="id_password2">
     </div>
     <button class="btn btn-primary mt-2" type="submit">Register</button>
-    <p>Already have an account? <a class="text-black" href="{% url 'login' %}">Login now</a></p>
+    <p>Already have an account? <a href="{% url 'login' %}">Login now</a></p>
     {% for field in form %}
     {% for error in field.errors %}
         <span class="text-danger"> {{field.label}} : {{ error }} </span> 
@@ -40,6 +37,9 @@
     {% endfor %}
 </form>
 </div>
-</div>
 
 {% endblock %}
+
+{% block footer %}
+{% include "core/footer.html" %}
+{% endblock footer %}

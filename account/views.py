@@ -1,98 +1,131 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
-from .forms import CreateUserForm
-from account.models import CustomUser
+from .forms import CreateUserForm, LoginForm
+from .models import CustomUser, Message
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout,get_user_model
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str, DjangoUnicodeDecodeError
+from .utils import generate_token
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.urls import reverse
+from listings.models import Listing
+from profiles.models import Profile
+from profiles.forms import ProfileForm
+from django.http import HttpResponse
 
 
-#Create views here
+User = get_user_model()
+
+def deny_if_login(view_func):
+    def wrapper_func(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('front_page')  # Replace 'front_page' with the name of the view to redirect logged-in users
+        else:
+            return view_func(request, *args, **kwargs)
+    return wrapper_func
+
+def send_activation_email(user,request):
+    current_site= get_current_site(request)
+    subject = 'Activate your account'
+    body = render_to_string('account/activate.html',{
+        'user':user,
+        'domain':current_site,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': generate_token.make_token(user)
+    })
+
+    email = EmailMessage(subject=subject,body=body,from_email=settings.EMAIL_FROM_USER,
+    to=[user.email]
+    )
+
+    email.send()
+
+@deny_if_login
 def registerPage(request):
     form = CreateUserForm()
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()
-            user = form.cleaned_data.get('username')
-            messages.success(request,'account created for ' + user)
+            user = form.save(commit=False)
+
+            user.save()
+            
+            # Create and save the corresponding Profile instance
+            Profile.objects.create(user=user, email=user.email)
+
+            send_activation_email(user, request)
             return redirect('login')
     context = {'form':form}
     return render(request, 'account/register.html', context)
 
-def loginPage(request):
-    if request.user.is_authenticated:
-        return redirect('front_page')
-    else:
-        if request.method == 'POST':
-            username = request.POST.get('username')
-            password = request.POST.get('password')
 
+def loginPage(request):
+    # Redirect already authenticated users
+    if request.user.is_authenticated:
+        return redirect('front_page')  # Change 'front_page' to the appropriate view name
+
+    # Initialize the form
+    form = LoginForm()
+
+    if request.method == 'POST':
+        form = LoginForm(request.POST)  # Bind data to the form
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+
+            # Authenticate the user
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
-                login(request, user)
-                return redirect('front_page')
+                if user.is_superuser or user.is_email_verified:
+                    login(request, user)
+                    next_url = request.GET.get('next')
+                    if next_url:
+                        return redirect(next_url)
+                    return redirect('front_page')
+                else:
+                    messages.info(request, 'Please verify your email address before logging in.')
             else:
-                messages.info(request, 'Username or password is wrong')
-        return render(request, 'account/login.html')
+                messages.info(request, 'Username or password is incorrect.')
+
+    return render(request, 'account/login.html', {'form': form})
 
 @login_required
 def savedPage(request):
-    return render(request, 'account/saved.html')
+    user = request.user
+    listings = user.favorite_listings.all()
+    return render(request, 'account/saved.html',{'listings':listings})
 
+@login_required
 def logoutUser(request):
     logout(request)
     return redirect('login')
 
+@login_required
 def profile(request):
+
+    user_profile, created = Profile.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
-        # Get the current user
-        user = request.user
-        # Initialize a variable to track whether any changes were made
-        changes_made = False
-        new_username = request.POST.get('username')
-        new_email = request.POST.get('email')
+        form = ProfileForm(request.POST, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Changes saved')
+            return redirect('edit_profile')
+    else:
+        form = ProfileForm(instance=user_profile)
 
-        # Check if the username or email has changed
-        if new_username and new_username != user.username:
-            if CustomUser.objects.filter(username=new_username).exists():
-                messages.error(request, 'Username is taken')
-            else:
-                user.username = new_username
-                changes_made = True  # Indicate that a change was made
-
-        if new_email and new_email != user.email:
-            if CustomUser.objects.filter(email=new_email).exists():
-                messages.error(request, 'Email is already being used')
-            else:
-                user.email = new_email
-                changes_made = True  # Indicate that a change was made
-        
-
-        # Save changes if there were no errors
-        if changes_made:
-            try:
-                # Validate the user instance
-                user.full_clean()  # This will call the clean method
-                user.save()  # Save the user only if validation passes
-
-                messages.success(request, 'Profile updated successfully.')
-                return redirect('profile')
-            except ValidationError as e:
-                for error in e.messages:
-                    messages.error(request, error)  # Add each validation error to messages
-                return redirect('profile')
+    return render(request, 'profiles/edit_profile.html', {'form': form})
     
-    # For GET requests, render the profile template with the current user's information
-    return render(request, 'account/profile.html')
-    
-
-#The page for requesting to change a password
+@login_required
 def change_password(request):
-    
     
     if request.method == 'POST':
         user = request.user
@@ -119,4 +152,76 @@ def change_password(request):
         else:
             messages.error(request, 'The current password is incorrect.')
     
-    return render(request, 'account/change_password.html')
+    return render(request, 'account/tabs/change_password.html')
+
+def activate_user(request, uidb64, token):
+    try:
+        # Decode uidb64 to get the user id
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (ObjectDoesNotExist, TypeError, ValueError, OverflowError) as e:
+        user = None
+
+    # Check if the user and token are valid
+    if user is not None and generate_token.check_token(user, token):
+        user.is_email_verified = True
+        user.save()
+
+        messages.add_message(request, messages.SUCCESS, 'Email verified successfully.')
+        return redirect(reverse('login'))
+    
+    # If the user is None or the token is invalid, render the activation failed page
+    messages.add_message(request, messages.ERROR, 'Activation link is invalid or has expired.')
+    return render(request, 'account/activate-failed.html', {"user": user})
+
+@login_required
+def change_details(request):
+    if request.method == 'POST':
+        # Get the current user
+        user = request.user
+        # Initialize a variable to track whether any changes were made
+        changes_made = False
+        new_email = request.POST.get('email')
+
+        # Check if the username or email has changed
+        if new_email and new_email != user.email:
+            if CustomUser.objects.filter(email=new_email).exists():
+                messages.error(request, 'Email is already being used')
+            else:
+                user.email = new_email
+                changes_made = True  # Indicate that a change was made
+        
+
+        # Save changes if there were no errors
+        if changes_made:
+            try:
+                # Validate the user instance
+                user.full_clean()  # This will call the clean method
+                user.save()  # Save the user only if validation passes
+
+                messages.success(request, 'Profile updated successfully.')
+                return redirect('profile')
+            except ValidationError as e:
+                for error in e.messages:
+                    messages.error(request, error)  # Add each validation error to messages
+                return redirect('profile')
+    
+    # For GET requests, render the profile template with the current user's information
+    return render(request, 'account/tabs/change_details.html')
+
+@login_required
+def my_listings_tab(request):
+
+    user = request.user
+    listings = Listing.objects.filter(user=user)
+    context = {
+        'listings': listings,
+    }   
+    return render(request, 'account/tabs/my_listings_tab.html',context)
+
+@login_required
+def inbox(request):
+    user = request.user
+    inbox = Message.objects.filter(recipient=user,recipient_deleted=False).order_by('-date')
+    return render(request,'account/tabs/inbox.html',{'inbox':inbox})
+

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Listing
+from .models import Listing, ListingImage
 from .municipalities import MUNICIPALITIES
 import datetime
 
@@ -8,14 +8,17 @@ def current_year():
 
 class ListingForm(forms.ModelForm):
 
+    location = forms.CharField(widget=forms.HiddenInput(attrs={'id':'location','value':'Athens'}))
+
     class Meta:
         model = Listing
         fields = [
-            'title', 'description', 'price', 'municipality', 'hidden', 'size', #primary fields
+            'title', 'description', 'price', 'hidden', 'size','address','latitude','longitude', #primary fields
             'bathrooms', 'roommates', 'floor', 'build_year', 'pet', #secondary
-            'own_room', 'garden', 'parking', 'elevator', 'smoking']  # tetartiary
+            'own_room', 'garden', 'parking', 'elevator', 'smoking',  # tetartiary
+        ]
         widgets = {
-            'title' : forms.TextInput(attrs={'class' : 'form-control','placeholder':'ex. Room in Gaza with a view'}),
+            'title' : forms.TextInput(attrs={'class' : 'form-control','placeholder':'ex. Room in Gazi with a view'}),
             'description': forms.Textarea(attrs={'rows':4, 'cols':15, 'class':'form-control','placeholder':'An insightful description...'}),
             'build_year': forms.NumberInput(attrs={'class': 'form-control', 'min': '1940', 'max': str(current_year() + 1)}),
             'hidden' : forms.CheckboxInput(attrs={'class' : 'form-check-input'}),
@@ -30,5 +33,9 @@ class ListingForm(forms.ModelForm):
             'price' : forms.NumberInput(attrs={'class': 'form-control','min': '15','max':'5000'}),
             'size' : forms.NumberInput(attrs={'class': 'form-control','min': '0','max':'500'}),
             'pet' : forms.CheckboxInput(attrs={'class' : 'form-check-input'}),
+            'address': forms.TextInput(attrs={'class': 'form-control','placeholder': 'Enter an address','id': 'autocomplete',
+            }),
+            'latitude': forms.HiddenInput(attrs={'id': 'latitude'}),
+            'longitude': forms.HiddenInput(attrs={'id': 'longitude'}),
         }
         

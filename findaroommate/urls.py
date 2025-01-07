@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from search.views import search_listings
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,5 +26,8 @@ urlpatterns = [
     path('search/', include('search.urls')),  # Search app
     path('account/', include('account.urls')),  # Account App
     path('listings/', include('listings.urls')), #listings app
+    path('users/',include('profiles.urls')),
     
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -17,3 +17,6 @@ __pycache__/
 
 # Ignore any log files
 *.log
+
+# Ignore all media
+/media/

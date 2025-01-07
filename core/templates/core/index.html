@@ -8,11 +8,12 @@ amogus
 <link rel="stylesheet" href="{% static "search/css/filters.css" %}">
 <link rel="stylesheet" href="{% static "core/css/index.css" %}">
 {% endblock %}
+
 {% block navbar %}
 {% include 'core/navbar.html' %}
 {% endblock %}
 {% block content %}
-
+<div class="container d-flex flex-column justify-content-center content">
     <div class="d-flex flex-column text-center">
         <div class="title">
             <h1> List your house for rent, or find a place to stay</h1>
@@ -20,54 +21,13 @@ amogus
         <div class="subtitle"><h2> easy search </h2></div>
         {% include 'search/searchbar.html' %}
     </div>
+</div>
 
 
-
-{% endblock %}
-
-
+{% endblock content %}
+{% block footer %}
+{% include "core/footer.html" %}
+{% endblock footer %}
 {% block body_scripts %}
-<script>
-    function filterMunicipalities() {
-        const searchInput = document.getElementById('mn-search');
-        const filter = searchInput.value.toLowerCase();
-        const dropdown = document.getElementById('mn-select');
-        const items = dropdown.getElementsByClassName('dropdown-item');
-
-        for (let i = 0; i < items.length; i++) {
-            const itemText = items[i].textContent.toLowerCase();
-            items[i].style.display = itemText.includes(filter) ? 'block' : 'none';
-        }
-    }
-
-    function selectMunicipality(element) {
-        const selectedValue = element.getAttribute('data-value');
-        const selectedText = element.textContent;
-
-        document.getElementById('mn-button').textContent = selectedText; // Update button text
-        document.getElementById('selectedMunicipality').value = selectedValue; // Store selected value
-    }
-</script>
-<script>
-    function validateNumbers() {
-        let min,max,errorMsg;
-        const errorField = document.getElementById("form-error");
-        min = parseInt(document.querySelector("[name='price_min']").value) ?? 0;
-        max = parseInt(document.querySelector("[name='price_max']").value);
-        if (!isNaN(max)) {
-            if (min > max) {
-                errorMsg = "Minimum cannot be greater than maximum!";
-            }
-        }
-    
-        if (errorMsg) {
-            errorField.innerText = errorMsg;
-            errorField.style.display = 'flex';
-            
-        } else if (errorField.style.display!="none"){
-            errorField.style.display="none";
-        }
-    }
-
-    </script>
+<script src="{% static "search/js/filter.js" %}"></script>
 {% endblock %}

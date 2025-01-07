@@ -1,67 +1,100 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
+{% block extra_style %}
+<link rel="stylesheet" href="{% static "search/css/searchbar.css"%}">
+{% endblock %}
 {% block navbar %}
 {% include "core/navbar.html" %}
 {% endblock %}
-{% block content %}
-<div class="container-fluid h-100 d-flex flex-column">
-    <h2>Search Results</h2>
-    <ul class="list-group">
-        {% for listing in listings %}
-            <li class="list-group-item">
-                <div class="d-flex">
-                    <div class="px-5">
-                    </div>
-                <div class="d-flex flex-column">
-                    <h5>{{ listing.title }}</h5>
-                        <div>
-                        <span>{{ listing.municipality }}</span>
-                        <span>{{listing.build_year}}</span>
-                        <span>{{listing.size}}</span>
-                        </div>
-                </div> id {{listing.id}}
-                {% if request.user.is_anonymous %}
-                    <button class="btn btn-outline-danger" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
-                    hx-post="{% url 'add_favorite' listing.id %}"  hx-swap="outerHTML">
-                        Add to favorites
-                    </button>
-                {% else %}
-                    {% if listing in user.favorite_listings.all %}
-                    <button class="btn btn-danger" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-post=".">Saved</button>
-                    {% else %}
-                    <button class="btn btn-outline-danger" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
-                    hx-post="{% url 'add_favorite' listing.id %}" hx-swap="outerHTML">
-                        Add to favorites
-                    </button>
-                    {% endif %}
-                {% endif %}
-                   
-                </div>
-            </li>
-        {% empty %}
-            <li class="list-group-item">No listings found.</li>
-        {% endfor %}
-    </ul>
-{% endblock %}
-<!-- Toast Notification -->
-<div id="favoriteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true">
-    <div class="toast-header">
-        <strong class="me-auto">Favorites</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-    <div class="toast-body">
-        Added to favorites!
-    </div>
-</div>
-</div>
-{% block body_scripts %}
-<script>
-   
-</script>
-    
 
-{% endblock %}
+{% block content %}
+
+<div class="container content d-flex flex-column gap-5">
+    <div class="d-flex justify-content-start gap-1">
+        <form class="gap-1 d-flex" method="GET" action="{% url 'search_listings' %}">
+            <input id="searchbar" class="form-control pe-5" type="text" name="query" placeholder="Search..." value="{{ request.GET.query }}">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+        {% include 'search/filters.html' with inline=True %}
+    </div>
+    <div class="w-75 h-100 d-flex flex-column">
+        <h2>Search Results</h2>
+        <div class="d-flex flex-wrap gap-3">
+        {% for listing in listings %}
+            <div class="card mx-auto mx-lg-0" style="width: 18rem;">
+                {% if listing.images.all %}
+                <img src="{{ listing.images.first.thumbnail.url }}" alt="Thumbnail for {{ listing.title }}" style="cursor: pointer;" onclick="window.location='{% url 'single' listing.id %}';">
+                {% else %}
+                <img src='{% static "images/no-image.webp" %}' alt="No image available" style="cursor: pointer;" onclick="window.location='{% url 'single' listing.id %}';">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ listing.title }}</h5>
+                    <div class="card-text d-flex flex-column gap-1">
+                        <div class="d-flex gap-1">
+                        <span>{{ listing.location.name }}</span>
+                        <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <h5>{{ listing.price }} €/month</h5>
+                        <div class="text-info-emphasis d-flex gap-2">
+                            <span class="rounded-3 px-1 bg-info-subtle">Build year: {{listing.build_year}}</span>
+                            <span class="rounded-3 px-1 bg-info-subtle">Size: {{listing.size}} m2</span>
+                        </div>
+                        {% if listing.user %}
+                            <a href=""><i class="bi bi-person-fill pe-2"></i>{{listing.user}}</a>
+                        {% endif %}
+                    </div>
+                    <div class="mt-2 justify-content-between d-flex">
+                    {% if request.user.is_anonymous %}
+                        <button class="btn btn-outline-danger" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
+                        hx-post="{% url 'handle_favorite' listing.id %}"  hx-swap="outerHTML">
+                            Add to favorites
+                        </button>
+                    {% else %}
+                        {% if listing in user.favorite_listings.all %}
+                        <button class="btn btn-danger" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-post="{% url 'handle_favorite' listing.id %}"  hx-swap="outerHTML">Saved</button>
+                        {% else %}
+                        <button class="btn btn-outline-danger" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'  hx-swap="outerHTML" 
+                        hx-post="{% url 'handle_favorite' listing.id %}">
+                        Add to favorites
+                        </button>
+                        {% endif %}
+                    {% endif %}
+                        <a class="btn btn-primary" href="{% url 'single' listing.id %}">View<i class="bi bi-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+                
+        {% empty %}
+            <p class="list-group-item">No listings found.</p>
+        {% endfor %}
+        </div>
+    </div>
+    <div id="favoriteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true">
+        <div class="toast-header">
+            <strong class="me-auto">Favorites</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Added to favorites!
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+
+{% block body_scripts %}
+<script src="{% static "search/js/filter.js" %}"></script>
+{% endblock body_scripts %}
+
+{% block footer %}
+{% include "core/footer.html" %}
+{% endblock footer %}
+
+
 
 
 

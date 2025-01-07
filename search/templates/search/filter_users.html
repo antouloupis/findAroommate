@@ -1,0 +1,91 @@
+<button type="button" class="btn btn-success px-4 py-2" data-bs-toggle="modal" data-bs-target="#tenantModal">
+    <i class="bi bi-funnel me-1"></i>Search for tenants
+</button>
+<div class="modal fade" id="tenantModal" tabindex="-1" aria-labelledby="tenantModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <form name="tenant_form" method="GET" action="{% url 'tenant_listings' %}" onsubmit="cleanURL(event)">
+        <div class="modal-header">
+            <h5 class="modal-title" id="tenantModalLabel">Tenants</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_area" class="form-label">Area</label>
+                    {{ tenant_form.area }}
+                </div>
+                <div class="col">
+                    <label for="id_roommates_max" class="form-label">Maximum roommates</label>
+                    {{tenant_form.roommates_max}}
+                </div>
+            </div>
+            
+            <div class="row d-flex">
+                <div class="col d-flex flex-column gap-2">
+                    <label>Price</label>
+                    <div class="d-flex gap-2">
+                        {{tenant_form.price_min}}
+                        {{tenant_form.price_max}}
+                    </div>
+                </div>
+                <div class="col d-flex flex-column gap-2">
+                    <label>Floor</label>
+                    <div class="d-flex gap-2">
+                    {{tenant_form.floor_min}}
+            
+                    {{tenant_form.floor_max}}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_size_min" class="form-label">Size (m2)</label>
+                    {{tenant_form.size_min}}
+                </div>
+                <div class="col">
+                    <label for="id_bathrooms_min" class="form-label">Bathrooms</label>
+                    {{tenant_form.bathrooms_min}}
+                </div>
+            </div>
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_own_room" class="form-label">Own Room</label>
+                    {{ tenant_form.own_room }}
+                </div>
+                <div class="col">
+                    <label for="id_garden" class="form-label">Garden</label>
+                    {{ tenant_form.garden }}
+                </div>
+                <div class="col">
+                    <label for="id_parking" class="form-label">Parking</label>
+                    {{ tenant_form.parking }}
+                </div>
+            </div>
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_elevator" class="form-label">Elevator</label>
+                    {{ tenant_form.elevator }}
+                </div>
+                <div class="col">
+                    <label for="id_smoking" class="form-label">Smoking indoors</label>
+                    {{ tenant_form.smoking }}
+                </div>
+                <div class="col">
+                    <label for="id_pet" class="form-label">Pet allowed</label>
+                    {{ tenant_form.pet }}
+                </div>
+            </div>
+            <div id="form-error" class="error-message" style="display:none; color: red;">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="search-tenants">Search</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</form>
+  

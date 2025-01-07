@@ -6,3 +6,49 @@
 {% block navbar %}
 {% include "core/navbar.html" %}
 {% endblock %}
+{% block content %}
+<div class="container content">
+{% if listings %}
+    <h1 class="mb-5">Your saved listings:</h1>
+    <div class="d-flex flex-wrap gap-2">
+    {% for listing in listings %}
+            <div class="card" style="width: 18rem;">
+                {% if listing.images.all %}
+                <img src="{{ listing.images.first.thumbnail.url }}" alt="Thumbnail for {{ listing.title }}">
+                {% else %}
+                <img src='{% static "images/no-image.webp" %}' alt="No image available">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ listing.title }}</h5>
+                    <div class="card-text d-flex flex-column gap-1">
+                        <div class="d-flex gap-1">
+                        <span>{{ listing.location.name }}</span>
+                        <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <h5>{{ listing.price }} €/month</h5>
+                        <div class="text-info-emphasis d-flex gap-2">
+                            <span class="rounded-3 px-1 bg-info-subtle">Build year: {{listing.build_year}}</span>
+                            <span class="rounded-3 px-1 bg-info-subtle">Size: {{listing.size}} m2</span>
+                        </div>
+                        <a href=""><i class="bi bi-person-fill pe-2"></i>{{listing.user}}</a>
+                    </div>
+                    <div class="mt-2 justify-content-between d-flex">
+                    <button class="btn btn-danger" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-post="{% url 'handle_favorite' listing.id %}"  hx-swap="outerHTML">Saved</button>
+                    <a class="btn btn-primary" href="{% url 'single' listing.id %}">View<i class="bi bi-arrow-right ms-2"></i></a>
+                    </div>
+            </div>
+            </div>
+    {% endfor %}
+    </div>
+    {% else %}
+    <div class="d-flex flex-column text-center">
+        <h1 class="mb-5 display-5">You have no favorite listings!</h1>
+        <a class="display-6 mx-auto" href="{% url 'search_listings' %}">Find some</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block footer %}
+{% include "core/footer.html" %}
+{% endblock footer %}

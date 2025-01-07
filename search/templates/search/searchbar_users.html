@@ -1,0 +1,12 @@
+<form class="m-auto w-50 mt-4" method="GET" name="search_form" action="{% url 'search_users' %}">
+    <div class="position-relative d-flex m-auto w-75">
+        <input id="searchbar" class="form-control" type="text" name="query" placeholder="Search..." value="{{ request.GET.query }}">
+        <i class="bi bi-search position-absolute end-0 btn bg-clear pe-none" id="search-icon"></i>
+    </div>
+    <div class="mt-2 gap-5 m-auto">
+        <button type="submit" class="btn btn-primary me-4 px-4 py-2">
+            <i class="bi bi-search me-1"></i>Search
+        </button> 
+    </form>
+        {% include 'search/filters.html' %}
+    </div>

@@ -1,108 +1,108 @@
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-   <div class="modal-dialog modal-dialog-centered">
-     <div class="modal-content">
-       <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel">Filters</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+{% load static %}
+<link rel="stylesheet" href="{% static "search/css/filters.css" %}">
+{% if inline %}
+
+<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#filterModal">
+    <i class="bi bi-funnel"></i>
+</button>
+{% else %}
+<button type="button" class="btn btn-success px-4 py-2" data-bs-toggle="modal" data-bs-target="#filterModal">
+    <i class="bi bi-funnel me-1"></i>Filters
+</button>
+{% endif %}
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <form name="filter_form" method="GET" action="{% url 'filter_listings' %}" onsubmit="cleanURL(event)">
+        <div class="modal-header">
+            <h5 class="modal-title" id="filterModalLabel">Filters</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-
-        <div class="modal-body">
-        <form>
-        </form>
-        <div class="row d-flex mb-4">
-            <div class="col mx-auto">
-                <div class="dropdown mb-3">
-                    <label class="form-label">Select municipality</label>
-                    <button class="btn btn-secondary form-control dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="mn-button">
-                        Select...
-                    </button>
-                    <ul class="dropdown-menu" id="mn-select">
-                        <li>
-                            <input type="text" class="form-control bg-transparent" id="mn-search" placeholder="ex. Athens" onkeyup="filterMunicipalities()">
-                        </li>
-                        <li><hr class="dropdown-divider"></li> <!-- Divider for aesthetics -->
-                        {% for value, label in filter_form.municipality.field.choices %}
-                            <li class="dropdown-item" data-value="{{ value }}" onclick="selectMunicipality(this)">{{ label }}</li>
-                        {% endfor %}
-                    </ul>
-                    <input type="hidden" id="selectedMunicipality" name="municipality">
-              </div>
-            </div>
-        </div>
-        <div class="row d-flex my-4">
-            <div class="col mx-auto d-flex flex-column">
-                <label class="form-label">Price:</label> 
-                <div class="d-flex">
-                <input type="number" class="form-control" name="price_min" placeholder="From" min="0" onChange="validateNumbers()">
-                <input type="number" class="form-control" name="price_max" placeholder="Max" min="0" onChange="validateNumbers()">
+        <div class="modal-body d-flex flex-column gap-3">
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_area" class="form-label">Area</label>
+                    {{ filter_form.area }}
+                </div>
+                <div class="col">
+                    <label for="id_roommates_max" class="form-label">Maximum roommates</label>
+                    {{filter_form.roommates_max}}
+                    <small id="roommates_error" class="text-danger"></small>
                 </div>
             </div>
-
-            <div class="col mx-auto d-flex flex-column">
-                <label class="form-label">House size(m2):</label> 
-                <div class="d-flex">
-                    <input type="number" class="form-control" placeholder="From" name="min_size"  min="0">
-                    <input type="number" class="form-control" placeholder="Max" name="max_size" min="0">
+            
+            <div class="row d-flex">
+                <div class="col d-flex flex-column gap-2">
+                    <label>Price</label>
+                    <div class="d-flex gap-2">
+                        {{filter_form.price_min}}
+                        <small id="price_min_error" class="text-danger"></small>
+                        {{filter_form.price_max}}
+                        <small id="price_max_error" class="text-danger"></small>
+                        
+                    </div>
+                </div>
+                <div class="col d-flex flex-column gap-2">
+                    <label>Floor</label>
+                    <div class="d-flex gap-2">
+                    {{filter_form.floor_min}}
+                    <small id="floor_min_error" class="text-danger"></small>
+                    {{filter_form.floor_max}}
+                    <small id="floor_max_error" class="text-danger"></small>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row d-flex my-4">
-            <div class="col d-flex">
-                <div class="mx-auto d-flex flex-column mx-auto">
-                    <label for="elevator" class="form-label">Elevator:</label>
-                    <input type="checkbox" class="form-check-input mx-auto p-2" name="elevator">
+            
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_size_min" class="form-label">Size (m2)</label>
+                    {{filter_form.size_min}}
+                    <small id="size_error" class="text-danger"></small>
                 </div>
-                <div class="mx-auto d-flex flex-column mx-auto">
-                    <label for="smoking" class="form-label">Smoking:</label>
-                    <input type="checkbox" class="form-check-input mx-auto p-2" name="smoking">
-                </div>
-                <div class="mx-auto d-flex flex-column mx-auto">
-                    <label for="parking" class="form-label">Parking:</label>
-                    <input type="checkbox" class="form-check-input mx-auto p-2" name="parking">
-                </div>
-                <div class="mx-auto d-flex flex-column mx-auto">
-                    <label for="garden" class="form-label">Garden:</label>
-                    <input type="checkbox" class="form-check-input mx-auto p-2" name="garden">
-                </div>
-                <div class="mx-auto d-flex flex-column mx-auto">
-                    <label for="own_room" class="form-label">Own room:</label>
-                    <input type="checkbox" class="form-check-input mx-auto p-2" name="own_room">
+                <div class="col">
+                    <label for="id_bathrooms_min" class="form-label">Bathrooms</label>
+                    {{filter_form.bathrooms_min}}
+                    <small id="bathroom_error" class="text-danger"></small>
                 </div>
             </div>
-        </div> 
-
-        <div class="row d-flex mt-4">
-            <div class="col mx-auto d-flex flex-column">
-                <label for="bathrooms_min" class="form-label">Bathrooms:</label> 
-                <div class="d-flex">
-                <input type="number" class="form-control" name="bathrooms_min" placeholder="From" min="0" max="10">
-                <input type="number" class="form-control" name="bathrooms_max" placeholder="Max" min="0" max="10">
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_own_room" class="form-label">Own Room</label>
+                    {{ filter_form.own_room }}
+                </div>
+                <div class="col">
+                    <label for="id_garden" class="form-label">Garden</label>
+                    {{ filter_form.garden }}
+                </div>
+                <div class="col">
+                    <label for="id_parking" class="form-label">Parking</label>
+                    {{ filter_form.parking }}
                 </div>
             </div>
-
-            <div class="col mx-auto d-flex flex-column">
-                <label for="roommates_min" class="form-label">Roommates:</label> 
-                <div class="d-flex">
-                <input type="number" class="form-control mx-auto" name="roommates_min" placeholder="From" min="0" max="10">
-                <input type="number" class="form-control mx-auto" name="roommates_max" placeholder="Max" min="0" max="10">
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_elevator" class="form-label">Elevator</label>
+                    {{ filter_form.elevator }}
+                </div>
+                <div class="col">
+                    <label for="id_smoking" class="form-label">Smoking indoors</label>
+                    {{ filter_form.smoking }}
+                </div>
+                <div class="col">
+                    <label for="id_pet" class="form-label">Pet allowed</label>
+                    {{ filter_form.pet }}
                 </div>
             </div>
-
-            <div class="col mx-auto d-flex flex-column">
-                <label for="floor_min" class="form-label">Floor:</label> 
-                <div class="d-flex">
-                <input type="number" class="form-control mx-auto" placeholder="From" name="floor_min" min="-2" max="15">
-                <input type="number" class="form-control mx-auto" placeholder="Max" name="floor_max" min="-2" max="15">    
-                </div>
+            <div id="form-error" class="error-message" style="display:none; color: red;">
             </div>
-        </div>
-        <span id="form-error" class="text-danger"></span>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Search</button>
+          <button type="submit" class="btn btn-primary" id="search-filters">Search</button>
         </div>
+        
       </div>
     </div>
   </div>
+</form>
+
   

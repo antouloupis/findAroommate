@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
-from decouple import config
+from decouple import config,RepositoryEnv,Config
+
+config = Config(RepositoryEnv('.env.dev'))
 
 SECRET_KEY = config('SECRET_KEY')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,7 +48,8 @@ INSTALLED_APPS = [
     'core',
     'account',
     'listings',
-    'search'
+    'search',
+    'profiles',
 ]
 
 MIDDLEWARE = [
@@ -142,3 +145,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#EMAIL CONFIG
+
+EMAIL_FROM_USER=config('EMAIL_FROM_USER')
+EMAIL_HOST=config('EMAIL_HOST')
+EMAIL_HOST_USER=config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD=config('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS=config('EMAIL_USE_TLS')
+EMAIL_PORT=config('EMAIL_PORT')

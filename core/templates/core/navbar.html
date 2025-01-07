@@ -9,7 +9,7 @@
         {% if request.user.is_anonymous %}
         <button id="login" class="btn btn-dark" onclick="window.location.href='{% url 'login' %}'">Login</button>
         {% else %}
-        <button type="button" onclick="window.location.href='{% url "profile" %}'" class="btn btn-info">
+        <button type="button" onclick="window.location.href='{% url 'edit_profile' %}'" class="btn btn-info">
           <i class="bi bi-person-fill"></i>
           <span> Hello, {{request.user}} </span>
         </button>

@@ -1,0 +1,208 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block navbar %}
+{% include "core/navbar.html" %}
+{% endblock navbar %}
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock extra_head %}
+{% block content %}
+<div class="container content my-5 bg-white p-5 rounded-5 d-flex flex-column gap-5">
+  <h1 class="mb-5"> {{listing.title}} </h1>
+  {% if listing.images.exists %}
+    <div id="CarouselIndicators" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+        <div class="carousel-indicators">
+          {% for image in listing.images.all %}
+            <button type="button" data-bs-target="#CarouselIndicators" data-bs-slide-to="{{ forloop.counter0 }}" 
+                    class="{% if forloop.first %}active{% endif %}" 
+                    aria-current="{% if forloop.first %}true{% endif %}" 
+                    aria-label="Slide {{ forloop.counter }}"></button>
+          {% endfor %}
+        </div>
+        <div class="carousel-inner">
+          {% for image in listing.images.all %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <img src="{{ image.image.url }}" class="d-block" alt="...">
+            </div>
+          {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#CarouselIndicators" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#CarouselIndicators" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+  {% else %}
+    <div class="d-flex">
+      <img src='{% static "images/no-image-full.webp" %}' alt="No image available" class="mx-auto">
+    </div>
+  {% endif %}
+  <hr class="w-75 my-5 mx-auto">
+  {{listing.description|linebreaks}}
+  <div>
+    <h2 class="my-5 d-flex">Listing details:</h2>
+    <div class="d-flex features justify-content-center gap-5 flex-wrap">
+      <div class="d-flex flex-column col-auto align-items-center justify-content-center gap-3 fs-5">
+        <div class="d-flex flex-column align-items-center">
+          <span class="fw-bold"><i class="me-2 bi bi-currency-euro"></i>Price:</span>
+          <span>{{listing.price}}€ /month</span>
+        </div>
+        <div class="d-flex flex-column align-items-center">
+          <span class="fw-bold"><i class="me-2 bi bi-geo-alt-fill"></i>Location:</span>
+          <span>{{listing.location.name}}</span>
+        </div>
+        
+        <div class="d-flex flex-column align-items-center">
+          <span class="fw-bold"><i class="me-2 bi bi-geo-alt-fill"></i>Address:</span>
+          <span>{{listing.address}}</span>
+        </div>
+
+        <div class="d-flex flex-column align-items-center">
+          <span class="fw-bold"><i class="me-2 bi bi-border"></i>Size m2:</span>
+          <span>{{listing.size}} sqm</span>
+        </div>
+
+        <div class="d-flex flex-column align-items-center">
+          <span class="fw-bold"><i class="me-2 bi bi-border"></i>Posted by:</span>
+          <a href="{% url 'view_user' listing.user.username %}">{{listing.user.username}}</a>
+        </div>
+
+      </div>
+      <div class="d-flex col-lg-6 flex-column gap-3">
+        <span class="fw-bold">Listing on the map:</span>
+        <div id="map" data-lat="{{ listing.latitude }}" data-lng="{{ listing.longitude }}" class="w-100 h-100"></div>
+      </div>
+      <div class="d-flex flex-column col-auto justify-content-center gap-3">
+        <span class="fw-bold">Extra information:</span>
+        {% if listing.bathrooms %}
+        <div class="d-flex flex-column">
+          <div class="d-flex border border-black p-2">
+            <img class="me-2" src="{% static 'images/shower.svg'%}" style="width:16px;">
+            <span>
+              Bathrooms: {{listing.bathrooms}}
+            </span>
+          </div>
+          {% endif %}
+
+          {% if listing.roommates %}
+          <div class="d-flex border border-black p-2">
+            <i class="me-2 bi bi-person-fill"></i>
+            <span>
+              Roommates: {{listing.roommates}}
+            </span>
+          </div>
+          {% endif %}
+
+          {% if listing.floor %}
+          <div class="d-flex border border-black p-2">
+            <img class="me-2" src="{% static 'images/level.svg'%}" style="width:16px;">
+            <span>
+              Floor: {{listing.floor}}
+            </span>
+          </div>
+          {% endif %}
+
+          
+            <div class="d-flex border border-black p-2">
+              <img class="me-2" src="{% static 'images/pet.svg'%}" style="width:16px;">
+              <span>
+                {% if listing.pet %}
+                Pets allowed: Yes
+                {% else %}
+                Pets allowed: No
+                {% endif %}
+              </span>
+            </div>
+          
+
+          
+            <div class="d-flex border border-black p-2">
+              <i class="me-2 bi bi-check-circle-fill"></i>
+              <span>
+                {% if listing.own_room %}
+                Own room: Yes
+                {% else %}
+                Own room: No
+                {% endif %}
+              </span>
+            </div>
+          
+
+          
+            <div class="d-flex border border-black p-2">
+              <i class="me-2 bi bi-p-square-fill"></i>
+              <span>
+                {% if listing.parking %}
+                Parking: Yes
+                {% else %}
+                Parking: No
+                {% endif %}
+              </span>
+              
+            </div>
+          
+
+          
+            <div class="d-flex border border-black p-2 align-content-around">
+                <img class="me-2" src="{% static 'images/elevator.svg'%}" style="width:16px;">
+                <span>
+                {% if listing.elevator %}
+                Elevator: Yes
+                {% else %}
+                Elevator: No
+                {% endif %}
+              </span>
+            </div>
+
+
+            <div class="d-flex border border-black p-2">
+              <img class="me-2" src="{% static 'images/smoking.svg'%}" style="width:20px;">
+              <span>
+                {% if listing.smoking %}
+                Smoking indoors: Yes
+                {% else %}
+                Smoking indoors: No
+                {% endif %}
+              </span>
+            </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex flex-column contact mx-auto">
+    <span class="mx-auto">Request for contact:</span>
+    {% if sent %}
+      <p class="mx-auto"> You've already sent a message for this listing!</p>
+    {% else %}
+    {% if anon %}
+      <div class="d-flex flex-column justify-content-center mx-auto">
+        <p>You need to be logged in to send a message</p>
+        <a class="btn btn-primary" href="{% url 'login' %}">Login</a>
+      </div>
+      {% else %}
+      <form class="d-flex flex-column justify-content-center mx-auto"
+        hx-post="{% url 'send_automated_message' listing.id %}"
+        hx-target="#send-btn"
+        hx-swap="innerHTML">
+        <p> Hello, I am intrested in this listing. Please contact me!</p>
+        {% csrf_token %}
+        <button class="btn btn-dark px-3" id="send-btn" type="submit">Send Message</button>
+      </form>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+{% endblock content %}
+{% block body_scripts %}
+<script src="{% static 'listings/js/single.js' %}"></script>
+{% endblock body_scripts %}
+{% block footer %}
+{% include "core/footer.html" %}
+{% endblock footer %}

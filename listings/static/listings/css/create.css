@@ -1,6 +1,0 @@
-.dropdown-menu {
-    max-height: 200px; /* Limit height */
-    overflow-y: auto; /* Enable scrolling */
-    scrollbar-width:auto;
-    scrollbar-color: #0d6efd #f1f1f1; /* For Firefox */
-}
