@@ -1,5 +1,5 @@
-#findAroommate (for development)
-##Overview
+# findAroommate
+## Overview
 
 findAroommate is a Django-powered web application designed to help users find roommates or post listings to search for potential roommates. It allows users to create profiles, view available listings, and interact with others in their search for shared housing.
 
@@ -25,7 +25,8 @@ Ensure you have the following tools installed:
 1. Clone this repository
 2. Configure the environment variables in both .env files:
 Fill out the .env file(s) with the appropriate settings. 
-- You may need to configure:
+
+You may need to configure:
 
 - Django secret key
 - Database connection details
