@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile  # Path to Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000  # Use Django's development server
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000" # Use Django's development server
     working_dir: /app 
     volumes:
       - ./findaroommate:/app 
