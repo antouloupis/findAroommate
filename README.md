@@ -41,3 +41,6 @@ Make sure you have Docker and Docker Compose installed, then run the following c
 This will build the Docker images and start the services defined in the docker-compose.yml (e.g., web server, database).
     
 The application will be available at http://localhost:8000.
+
+Disclaimer: Any API key found in this repository, including those for Google Places API, is inactive and provided only as a placeholder. 
+Ensure you replace them with your own valid API keys in the appropriate locations where the API is used before running the application (ex. create, edit, and single templates under the listings app.)
