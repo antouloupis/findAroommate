@@ -5,9 +5,9 @@ services:
       context: .
       dockerfile: ./Dockerfile  # Path to Dockerfile
     command: python manage.py runserver 0.0.0.0:8000  # Use Django's development server
-    working_dir: /app  # Set the working directory to where wsgi.py is located
+    working_dir: /app 
     volumes:
-      - ./findaroommate:/app  # Mount the whole project directory
+      - ./findaroommate:/app 
     env_file: ./findaroommate/.env.dev
     ports:
       - "8000:8000"
