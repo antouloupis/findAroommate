@@ -1,0 +1,138 @@
+{% extends "core/base.html" %}
+{% block navbar %}
+{% include "core/navbar.html" %}
+{% endblock %}
+{% block title%}
+Profile
+{% endblock title %}
+{% block extra_head %}
+<script 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSh-iB4KO3aA7B6FSGcAODf3kCdqnF-OY&loading=async&libraries=places&callback=initAutocomplete" 
+    async 
+    defer>
+</script>
+{% endblock extra_head %}
+
+{% block content %}
+<div class="container d-flex flex-column content">
+    {% block nav_title %}
+    <h1>Profile</h1>
+    {% endblock nav_title %}
+
+    {% block page_nav%}
+    <div>
+        <ul class="nav nav-underline mb-3">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'change_details' %}" aria-current="page">Change email</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'change_password' %}">Change password</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url "my_listings_tab" %}">My Listings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'inbox' %}">Messages</a>
+            </li>
+            <li>
+                <a class="btn btn-danger" href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </div>
+
+{% endblock page_nav %}
+{% block active_tab %}
+<div class="d-flex flex-column">
+    {% for message in messages %}
+    <div class="alert alert-info">{{message}}</div>
+    {% endfor %}
+    <div class="d-flex flex-column">
+        <p><a href="{% url 'view_user' request.user.username %}">View your public profile</a></p>
+    </div>
+        <form class="d-flex flex-column gap-3" method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col d-flex gap-3">
+                    <h3 class="text-decoration-underline fw-bold text-danger">{{form.hidden.label}}:</h3>
+                    {{form.hidden}}
+                    {{form.location}}
+                </div>
+                <small>Enable this if you <b>don't</b> want to appear in search results</small>
+            </div>
+            <div class="row d-flex">
+                <div class="col d-flex flex-column">
+                    {{form.age.label}}:
+                    {{form.age}}
+                </div>
+                <div class="col d-flex flex-column">
+                    {{form.pets.label}}:
+                    {{form.pets}}
+                </div>
+
+                <div class="col-auto d-flex flex-column">
+                    {{form.email.label}}:
+                    {{form.email}}
+                </div>
+                <div class="col-auto d-flex flex-column">
+                    {{form.phone.label}}:
+                    {{form.phone}}
+                </div>
+                <div class="col-auto d-flex flex-column">
+                    <label for="autocomplete">I'd like to live in:</label>
+                    <input id="autocomplete" type="text" class="form-control" placeholder={{form.location.value}}>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-auto d-flex flex-column w-100">
+                    {{form.bio.label}}
+                    {{form.bio}}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-25 mx-auto mb-5">Save changes</button>
+        </form>
+</div>
+</div>
+<script>
+    function initAutocomplete() {
+        const autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('autocomplete'),
+            {
+                types: ['geocode'], 
+                componentRestrictions: { country: "gr" }, 
+            }
+        );
+
+        autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+            const addressComponents = place.address_components;
+            let locality = null;
+
+            addressComponents.forEach(component => {
+                const types = component.types;
+                if (types.includes('neighborhood')){
+                    locality = component.long_name;
+                }
+                else if (!locality && types.includes('locality')) {
+                    locality = component.long_name;
+                } else if (!locality && types.includes('administrative_area_level_1')) {
+                    locality = component.long_name; 
+                }
+            });
+
+            // Display the locality
+            document.getElementById('location').value = locality || 'Not found';
+        });
+    }
+
+</script>
+{% endblock active_tab %}
+
+{% endblock content %}
+{% block footer %}
+{% include "core/footer.html" %}
+{% endblock footer %}
+
+

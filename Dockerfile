@@ -2,10 +2,6 @@
 
 FROM python:3.12-bullseye
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
 # Set the working directory inside the container
 WORKDIR /app
 
@@ -16,13 +12,13 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-COPY ./findaroommate/requirements.txt /app/
+COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the Django app into the container
-COPY ./findaroommate/ /app/findaroommate
+COPY ./findaroommate /app
 
-COPY ./findaroommate/manage.py /app/
+#Run collectstatic
+RUN python manage.py collectstatic --noinput
 
 # Gunicorn will serve the app
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "findaroommate.wsgi:application"]

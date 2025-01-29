@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{%block title%}
+FindARoomMate
+{% endblock %}
+{% block extra_style %}
+<link rel="stylesheet" href="{% static "search/css/searchbar.css" %}">
+<link rel="stylesheet" href="{% static "search/css/filters.css" %}">
+<link rel="stylesheet" href="{% static "core/css/index.css" %}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'core/navbar.html' %}
+{% endblock %}
+{% block content %}
+<div class="container d-flex flex-column justify-content-center content">
+    <div class="d-flex flex-column text-center gap-2">
+        <div class="title">
+            <h1>Discover Homes and Roommates That Fit You</h1>
+        </div>
+        <div class="subtitle"><h4>Search for listings</h4>
+    </div>
+        {% include 'search/searchbar.html' %}
+        <a class="fw-semibold" href="{% url "filter_tenants" %}"><p>Looking for tenants?<p></a>
+    </div>
+</div>
+
+
+{% endblock content %}
+{% block footer %}
+{% include "core/footer.html" %}
+{% endblock footer %}
+{% block body_scripts %}
+<script src="{% static "search/js/filter.js" %}"></script>
+{% endblock %}

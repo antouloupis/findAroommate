@@ -1,0 +1,108 @@
+{% load static %}
+<link rel="stylesheet" href="{% static "search/css/filters.css" %}">
+{% if inline %}
+
+<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#filterModal">
+    <i class="bi bi-funnel"></i>
+</button>
+{% else %}
+<button type="button" class="btn btn-success px-4 py-2" data-bs-toggle="modal" data-bs-target="#filterModal">
+    <i class="bi bi-funnel me-1"></i>Filters
+</button>
+{% endif %}
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <form name="filter_form" method="GET" action="{% url 'filter_listings' %}" onsubmit="cleanURL(event)">
+        <div class="modal-header">
+            <h5 class="modal-title" id="filterModalLabel">Filters</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_area" class="form-label">Area</label>
+                    {{ filter_form.area }}
+                </div>
+                <div class="col">
+                    <label for="id_roommates_max" class="form-label">Maximum roommates</label>
+                    {{filter_form.roommates_max}}
+                    <small id="roommates_error" class="text-danger"></small>
+                </div>
+            </div>
+            
+            <div class="row d-flex">
+                <div class="col d-flex flex-column gap-2">
+                    <label>Price</label>
+                    <div class="d-flex gap-2">
+                        {{filter_form.price_min}}
+                        <small id="price_min_error" class="text-danger"></small>
+                        {{filter_form.price_max}}
+                        <small id="price_max_error" class="text-danger"></small>
+                        
+                    </div>
+                </div>
+                <div class="col d-flex flex-column gap-2">
+                    <label>Floor</label>
+                    <div class="d-flex gap-2">
+                    {{filter_form.floor_min}}
+                    <small id="floor_min_error" class="text-danger"></small>
+                    {{filter_form.floor_max}}
+                    <small id="floor_max_error" class="text-danger"></small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_size_min" class="form-label">Size (m2)</label>
+                    {{filter_form.size_min}}
+                    <small id="size_error" class="text-danger"></small>
+                </div>
+                <div class="col">
+                    <label for="id_bathrooms_min" class="form-label">Bathrooms</label>
+                    {{filter_form.bathrooms_min}}
+                    <small id="bathroom_error" class="text-danger"></small>
+                </div>
+            </div>
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_own_room" class="form-label">Own Room</label>
+                    {{ filter_form.own_room }}
+                </div>
+                <div class="col">
+                    <label for="id_garden" class="form-label">Garden</label>
+                    {{ filter_form.garden }}
+                </div>
+                <div class="col">
+                    <label for="id_parking" class="form-label">Parking</label>
+                    {{ filter_form.parking }}
+                </div>
+            </div>
+            <div class="row d-flex">
+                <div class="col">
+                    <label for="id_elevator" class="form-label">Elevator</label>
+                    {{ filter_form.elevator }}
+                </div>
+                <div class="col">
+                    <label for="id_smoking" class="form-label">Smoking indoors</label>
+                    {{ filter_form.smoking }}
+                </div>
+                <div class="col">
+                    <label for="id_pet" class="form-label">Pet allowed</label>
+                    {{ filter_form.pet }}
+                </div>
+            </div>
+            <div id="form-error" class="error-message" style="display:none; color: red;">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="search-filters">Search</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</form>
+
+  

@@ -1,0 +1,80 @@
+{% extends "profiles/edit_profile.html"%}
+{% load static %}
+{% block nav_title %}
+<h1 class="mt-5">My messages</h1>
+{% endblock nav_title %}
+{% block title %}
+Inbox
+{% endblock title %}
+{% block page_nav %}
+<div>
+    <ul class="nav nav-underline mb-3">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'edit_profile' %}" aria-current="page">Profile</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'change_details' %}" aria-current="page">Change email</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'change_password' %}" aria-current="page">Change password</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url "my_listings_tab" %}">My Listings</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active">Messages</a>
+        </li>
+        <li>
+            <a class="btn btn-danger" href="{% url 'logout' %}">Logout</a>
+        </li>
+    </ul>
+</div>
+
+{% endblock page_nav %} 
+
+{% block active_tab %}
+<div class="d-flex flex-wrap gap-lg-3 gap-4">
+    <ul class="list-group w-100">
+    {% for msg in inbox %}
+        <li class="list-group-item py-3">
+            <div class="row d-flex">
+                <div class="col-auto">
+                    {% if msg.sender %}
+                    <b>From: <a href="{% url "view_user" msg.sender.username %}">{{ msg.sender.username }}</a></b>
+                    {% else %}
+                    <b>From: Deleted user</b>
+                    {% endif %}
+                </div>
+                <div class="col-auto ms-auto">
+                    {% if msg.listing.id %}
+                    <a href="{% url "single" msg.listing.id %}">{{msg.listing.title}}</a>
+                    {% else %}
+                    <span>Deleted listing</span>
+                    {% endif %}
+                </div>
+                <div class="col-auto">
+                    <span>{{msg.date|date:"d M Y"}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <p>{{ msg.content }}</p>
+            </div>
+            <div class="row">
+                {% if msg.sender.profile.email %}
+                <div class="col-auto">
+                    <a href="mailto:{{msg.sender.profile.email}}">Email: {{msg.sender.profile.email}}</a>
+                </div>
+                {% endif %}
+                {% if msg.sender.profile.phone %}
+                <div class="col-auto">
+                    <a href="tel:{{msg.sender.profile.phone}}">Phone: {{msg.sender.profile.phone}}</a>
+                </div>
+                {% endif %}
+            </div>
+        </li>
+    {% empty %}
+    <p class="list-group-item">No messages found.</p>
+    {% endfor %}
+</div>
+</div>
+{% endblock active_tab %}

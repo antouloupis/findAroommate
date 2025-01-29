@@ -1,0 +1,12 @@
+<form class="d-flex gap-3" name="tenant_form" method="GET" action="{% url 'filter_tenants' %}">
+<div>
+<label for="id_pet" class="form-label">Pets</label>
+{{ tenant_form.pet }}
+</div>
+<div>
+<label for="id_area" class="form-label">Location</label>
+{{tenant_form.area}}
+</div>
+<button type="submit" class="btn btn-success mt-auto">Filter</button>
+</form>
+  
