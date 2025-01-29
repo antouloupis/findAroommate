@@ -1,0 +1,290 @@
+{% extends "core/base.html" %}
+{% block extra_style %}
+{% load static %}
+<link rel="stylesheet" href="{% static "listings/css/create.css" %}">
+{% endblock %}
+{% block title %}
+Create Listing
+{% endblock title %}
+{% block navbar %}
+{% include "core/navbar.html" %}
+{% endblock %}
+{% block extra_head %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+{% endblock %}
+{% block content %}
+<script 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSh-iB4KO3aA7B6FSGcAODf3kCdqnF-OY&loading=async&libraries=places&callback=initAutocomplete" 
+    async 
+    defer>
+</script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+
+<div class="container content">
+    {% if error_message %}
+        <div class="alert alert-danger">
+            {{ error_message }}
+        </div>
+    {% endif %}
+    
+    <form method="POST" class=" col-9 mx-auto" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row align-content-center">
+            <h2>Create a New Listing</h2>
+            <div class="col">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    {{ form.title }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row align-items-center">
+            <div class="col d-flex flex-column">
+                <label for="address" class="form-label">Address</label>
+                {{ form.address }}
+                {{ form.location }}
+                {{ form.latitude }}
+                {{ form.longitude }}
+
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column">
+                    <label class="form-label text-danger fw-bold">Hide listing from search?</label>
+                    <div class="form-check">
+                        <span>Yes</span>
+                        {{ form.hidden }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <div class="col d-flex flex-column">
+                
+                    <label for="price" class="form-label">Price:</label>
+                    {{ form.price }}
+
+            </div>
+            <div class="col d-flex flex-column">
+                
+                    <label for="build_year" class="form-label">Build Year:</label>
+                    {{ form.build_year }}
+                
+            </div>
+            <div class="col d-flex flex-column">
+                
+                <label for="size" class="form-label">House size:</label>
+                {{ form.size }}
+                
+            </div>
+            <div class="col d-flex flex-column">
+                
+                <label for="floor" class="form-label">Floor:</label>
+                {{ form.floor }}
+                
+            </div>
+            <div class="col d-flex flex-column">
+                
+                    <label for="bathrooms" class="form-label">Bathrooms:</label>
+                    {{ form.bathrooms }}
+                
+            </div>
+            <div class="col d-flex flex-column">
+                
+                <label for="roommates" class="form-label">Roommates:</label>
+                {{ form.roommates }}
+                
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Seperate room?
+                        <i class="bi bi-info-circle" title="Will the renter have their own room?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="own_room" class="form-check-label">Yes</label>
+                    {{ form.own_room }}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Smoking?
+                        <i class="bi bi-info-circle" title="Is smoking allowed indoors?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="smoking" class="form-check-label">Yes</label>
+                    {{ form.smoking }}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Parking?
+                        <i class="bi bi-info-circle" title="Is there a parking spot available to the renter?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="parking" class="form-check-label">Yes</label>
+                    {{ form.parking }}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Elevator?
+                        <i class="bi bi-info-circle" title="Is there elevator access?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="elevator" class="form-check-label">Yes</label>
+                    {{ form.elevator }}
+                    </div>
+                </div>
+            </div>
+            <div class="col d-flex">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Garden or yard?
+                        <i class="bi bi-info-circle" title="Is there an accessible garden or yard?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="garden" class="form-check-label">Yes</label>
+                    {{ form.garden }}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column h-100">
+                    <p class="form-label me-1">Pets allowed?
+                        <i class="bi bi-info-circle" title="Are pets allowed?" data-toggle="tooltip"></i>
+                    </p>
+                    <div class="form-check mt-auto">
+                    <label for="elevator" class="form-check-label">Yes</label>
+                    {{ form.pet }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <input type="file" name="image" multiple>
+
+        <div id="map" style="width: 100%; height: 300px;"></div>
+
+        <div class="row">
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                {{ form.description }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mb-5">Create Listing</button>
+    </form>
+</div>
+ <script>
+    let autocomplete;
+    let map;
+    let marker;
+    let selectedLocation;
+    function initAutocomplete() {
+
+        autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('autocomplete'),
+            {
+                types: ['geocode'], 
+                componentRestrictions: { country: "gr" }, 
+            }
+        );
+
+        // Event listener for place selection
+        autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+
+            if (place.geometry) {
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+
+                // Update hidden fields
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+
+                if (place.address_components) {
+                    
+                    for (const component of place.address_components) {
+                        if (component.types.includes('locality')) {
+                            selectedLocation = component.long_name;
+                            break;
+                        } else if (component.types.includes('administrative_area_level_1')) {
+                            selectedLocation = component.long_name;
+                        } else if (component.types.includes('administrative_area_level_5')) {
+                            selectedLocation = component.long_name;
+                        } else if (component.types.includes('country')) {
+                            selectedLocation = component.long_name;
+                            break;
+                        }
+                    }
+                }
+                document.getElementById('location').value = selectedLocation;
+
+                // Update map center
+                updateMap(lat, lng);
+            } else {
+                alert("No location details available for the selected address.");
+              }
+
+        });
+   }
+
+    function initMap() {
+        const defaultLat = 37.983810;
+        const defaultLng = 23.727539;
+  
+        map = L.map("map").setView([defaultLat, defaultLng], 13);
+  
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
+    
+        // Add a marker with a default position
+        marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+
+        // Event listener for marker drag
+        marker.on("dragend", function (event) {
+            const position = marker.getLatLng(); // Get marker's new position
+            const lat = position.lat;
+            const lng = position.lng;
+
+            // Update hidden fields with the new latitude and longitude
+            document.getElementById("latitude").value = lat.toFixed(6); // Rounded for clarity
+            document.getElementById("longitude").value = lng.toFixed(6);
+
+            map.setView([lat, lng], map.getZoom());
+        });
+    }
+  
+  function updateMap(latitude, longitude) {
+    map.setView([latitude, longitude], 15);
+    marker.setLatLng([latitude, longitude]);
+  }
+  
+  initMap();
+</script> 
+{% endblock %}
+
+{% block body_scripts %}
+
+
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock %}
+
+{% block footer %}
+{% include "core/footer.html" %}
+{% endblock footer %}

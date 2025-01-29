@@ -20,3 +20,6 @@ __pycache__/
 
 # Ignore all media
 /media/
+
+# Ignore Django migration files
+*/*/migrations/*

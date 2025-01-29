@@ -1,0 +1,14 @@
+# Ignore the virtual environment
+venv/
+lib/
+lib64/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.db
+*.sqlite3
+*.git
+*.gitignore
+bin/
+nginx/
